@@ -4,12 +4,17 @@
   "description": "\"JobPortal.API,\" a Node.js-based project leveraging the Express.js framework, is designed to provide a seamless and efficient API for online job portals. With Express.js at its core, the API facilitates the posting, updating, and deletion of job vacancies by administrators, while offering job seekers intuitive search functionalities, resume-based applications, and real-time tracking of application statuses. The use of Node.js ensures a scalable and responsive backend, ideal for projects of varying sizes. Backed by the simplicity and flexibility of Express.js, \"JobPortal.API\" offers a robust solution for developers, making integration straightforward and enabling the creation of feature-rich job portal experiences.",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "dev": "nodemon app",
+    "prod": "SET NODE_ENV=production & nodemon app.js"
   },
   "author": "Nikhil Prakash",
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.3.2",
     "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.3"
   }
 }
