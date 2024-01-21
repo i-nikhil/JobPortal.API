@@ -2,6 +2,7 @@ const Job = require('../models/jobs');
 
 //Create a new Job => /api/v1/job/new
 exports.newJob = async (req, res, next) => {
+    req.body.countryCode = req.body.countryCode.toUpperCase();
     const job = await Job.create(req.body);
     res.status(201).json({
         success: true,
@@ -30,7 +31,7 @@ exports.searchJobs = async (req, res, next) => {
         }
         // Filter jobs by country
         if (req.query.countryCode) {
-            query.countryCode = req.query.countryCode;
+            query.countryCode = req.query.countryCode.toUpperCase();
         }
         // Filter jobs by matching company
         if (req.query.company) {

@@ -33,7 +33,7 @@ const jobSchema = new mongoose.Schema({
         validate: {
             validator: function(value) {
                 // Check if the city name is valid using the cities package
-                return countriesList.countries[value] !== undefined;;
+                return countriesList.countries[value.toUpperCase()] !== undefined;
             },
             message: 'Please enter a valid country name.'
         }
