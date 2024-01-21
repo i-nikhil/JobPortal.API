@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const slugify = require('slugify');
+const countriesList = require('countries-list');
 
 const jobSchema = new mongoose.Schema({
     title: {
@@ -13,7 +14,8 @@ const jobSchema = new mongoose.Schema({
     description: {
         type: String,
         required: [true, 'Please enter Job descrition.'],
-        maxlength: [1000, 'Job description can not exceed 1000 characters.']
+        maxlength: [1000, 'Job description can not exceed 1000 characters.'],
+        trim: true
     },
     email: {
         type: String,
@@ -21,7 +23,20 @@ const jobSchema = new mongoose.Schema({
     },
     address: {
         type: String,
-        required: [true, 'Please add an address.']
+        required: [true, 'Please add an address.'],
+        trim: true
+    },
+    countryCode: {
+        type: String,
+        required: [true, 'Please enter a valid country.'],
+        trim: true,
+        validate: {
+            validator: function(value) {
+                // Check if the city name is valid using the cities package
+                return countriesList.countries[value] !== undefined;;
+            },
+            message: 'Please enter a valid country name.'
+        }
     },
     company: {
         type: String,
@@ -108,7 +123,6 @@ const jobSchema = new mongoose.Schema({
 jobSchema.pre('save',function(next){
     //Creating slug before saving to DB
     this.slug = slugify(this.title, {lower: true});
-
     next();
 })
 
