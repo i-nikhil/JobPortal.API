@@ -28,14 +28,16 @@ const jobSchema = new mongoose.Schema({
     },
     countryCode: {
         type: String,
-        required: [true, 'Please enter a valid country.'],
+        required: [true, 'Please enter a valid 2 character country code.'],
+        maxlength: [2, 'Country code must be of 2 characters.'],
+        minlength: [2, 'Country code must be of 2 characters.'],
         trim: true,
         validate: {
             validator: function(value) {
                 // Check if the city name is valid using the cities package
                 return countriesList.countries[value.toUpperCase()] !== undefined;
             },
-            message: 'Please enter a valid country name.'
+            message: 'Please enter a valid 2 character country code.'
         }
     },
     company: {
