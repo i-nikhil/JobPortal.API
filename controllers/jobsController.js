@@ -1,8 +1,9 @@
 const Job = require('../models/jobs');
 const ErrorHandler = require('../utils/errorHandler');
+const catchAsyncErrors = require('../middlewares/catchAsyncErrors');
 
 //Create a new job => /api/v1/job/new
-exports.newJob = async (req, res, next) => {
+exports.newJob = catchAsyncErrors( async (req, res, next) => {
     req.body.countryCode = req.body.countryCode.toUpperCase();
     const job = await Job.create(req.body);
     res.status(201).json({
@@ -10,37 +11,34 @@ exports.newJob = async (req, res, next) => {
         message: 'Job Created.',
         data: job
     });
-}
+});
 
 //Get job by id => /api/v1/job{id}
-exports.getJobById = async (req, res, next) => {
+exports.getJobById = catchAsyncErrors( async (req, res, next) => {
     const job = await Job.findById(req.params.id);
 
     if (!job || job.length === 0) {
-        return res.status(404).json({
-            success: false,
-            message: 'Job not found.'
-        })
+        return next(new ErrorHandler('Job not found.', 404));
     }
 
     res.status(200).json({
         success: true,
         data: job
     });
-}
+});
 
 //Get all Jobs => /api/v1/jobs
-exports.getJobs = async (req, res, next) => {
+exports.getJobs = catchAsyncErrors( async (req, res, next) => {
     const jobs = await Job.find();
     res.status(200).json({
         success: true,
         count: jobs.length,
         data: jobs
     });
-}
+});
 
 //Search Job by any field => /api/v1/job/search?query_params...
-exports.searchJobs = async (req, res, next) => {
+exports.searchJobs = catchAsyncErrors( async (req, res, next) => {
     let query = {};
 
     // Filter jobs by matching title
@@ -101,10 +99,7 @@ exports.searchJobs = async (req, res, next) => {
     const jobs = await Job.find(query);
 
     if (!jobs || jobs.length === 0) {
-        return res.status(404).json({
-            success: false,
-            message: 'Job not found.'
-        })
+        return next(new ErrorHandler('Job not found.', 404));
     }
 
     res.status(200).json({
@@ -112,10 +107,10 @@ exports.searchJobs = async (req, res, next) => {
         count: jobs.length,
         data: jobs
     });
-}
+});
 
 // Update a job => /api/v1/job/{id}
-exports.updateJob = async (req, res, next) => {
+exports.updateJob = catchAsyncErrors( async (req, res, next) => {
     let job = await Job.findById(req.params.id);
 
     if (!job || job.length === 0) {
@@ -132,17 +127,14 @@ exports.updateJob = async (req, res, next) => {
         message: 'Job is updated.',
         data: job
     });
-}
+});
 
 //Delete a Job by Id => /api/v1/job/:id
-exports.deleteJob = async (req, res, next) => {
+exports.deleteJob = catchAsyncErrors( async (req, res, next) => {
     let job = await Job.findById(req.params.id);
 
     if (!job || job.length === 0) {
-        return res.status(200).json({
-            success: false,
-            message: 'Job not found.'
-        });
+        return next(new ErrorHandler('Job not found.', 404));
     }
 
     await Job.findByIdAndDelete(req.params.id);
@@ -151,4 +143,4 @@ exports.deleteJob = async (req, res, next) => {
         success: true,
         message: 'Job deleted successfully.'
     });
-}
+});
