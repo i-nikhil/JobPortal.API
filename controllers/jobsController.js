@@ -1,6 +1,7 @@
 const Job = require('../models/jobs');
+const ErrorHandler = require('../utils/errorHandler');
 
-//Create a new Job => /api/v1/job/new
+//Create a new job => /api/v1/job/new
 exports.newJob = async (req, res, next) => {
     req.body.countryCode = req.body.countryCode.toUpperCase();
     const job = await Job.create(req.body);
@@ -97,16 +98,16 @@ exports.searchJobs = async (req, res, next) => {
         query.salary = { $gte: minSalary };
     }
 
-        const jobs = await Job.find(query);
+    const jobs = await Job.find(query);
 
-        if (!jobs || jobs.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'Job not found.'
-            })
-        }
+    if (!jobs || jobs.length === 0) {
+        return res.status(404).json({
+            success: false,
+            message: 'Job not found.'
+        })
+    }
 
-        res.status(200).json({
+    res.status(200).json({
         success: true,
         count: jobs.length,
         data: jobs
@@ -118,10 +119,7 @@ exports.updateJob = async (req, res, next) => {
     let job = await Job.findById(req.params.id);
 
     if (!job || job.length === 0) {
-        return res.status(404).json({
-            success: false,
-            message: 'Job not found.'
-        })
+        return next(new ErrorHandler('Job not found.', 404));
     }
 
     job = await Job.findByIdAndUpdate(req.params.id, req.body, {
