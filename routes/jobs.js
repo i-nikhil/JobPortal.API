@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
-//Importing jobs controller methods
-const { getJobs, newJob, getJobById, searchJobs, updateJob, deleteJob } = require('../controllers/jobsController');
+//Importing jobs controller
+const jobsController = require('../controllers/jobsController');
 
-router.route('/jobs').get(getJobs);
-router.route('/job/new').post(newJob);
-router.route('/job/search').get(searchJobs);
-router.route('/job/:id').get(getJobById).put(updateJob).delete(deleteJob);
+router.route('/jobs').get(jobsController.getJobs);
+router.route('/job/new').post(jobsController.newJob);
+router.route('/job/search').get(jobsController.searchJobs);
+router.route('/job/:id').get(jobsController.getJobById).put(jobsController.updateJob).delete(jobsController.deleteJob);
 module.exports = router;
