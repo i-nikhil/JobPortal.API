@@ -3,8 +3,10 @@ const app = express();
 const dotenv = require('dotenv');
 const connectDatabase = require('./config/database');
 const jobs = require('./routes/jobs');
+const auth = require('./routes/auth');
 const middleware = require('./middlewares/errors');
 const ErrorHandler = require('./utils/errorHandler');
+const cookieParser = require('cookie-parser');
 
 //Setting up config.env file variables
 dotenv.config({path: './config/config.env'}); 
@@ -22,8 +24,12 @@ connectDatabase();
 //Setup body parser
 app.use(express.json());
 
+//Set coookie parser
+app.unsubscribe(cookieParser());
+
 //Setup all routes
 app.use('/api/v1', jobs);
+app.use('/api/v1', auth);
 
 // Handle unhandled routes
 app.all('*', (req, res, next) => {

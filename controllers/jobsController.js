@@ -10,7 +10,6 @@ class JobsController {
         this.searchJobs = this.searchJobs.bind(this)
         this.updateJob = this.updateJob.bind(this)
         this.deleteJob = this.deleteJob.bind(this)
-        
     }
     //Create a new job => /api/v1/job/new
     newJob = catchAsyncErrors(async (req, res, next) => {
