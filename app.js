@@ -11,7 +11,7 @@ const cookieParser = require('cookie-parser');
 const fileUpload = require('express-fileupload');
 
 //Setting up config.env file variables
-dotenv.config({path: './config/config.env'}); 
+dotenv.config({ path: './config/config.env' });
 
 // Handling Uncaught Exception
 process.on('uncaughtException', err => {

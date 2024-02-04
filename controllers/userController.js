@@ -12,8 +12,8 @@ class UserController {
     }
 
     //Get current user profile => api/v1/me
-    getUserProfile = catchAsyncErrors( async (req, res, next) => {
-        if(!req.user) return next(new ErrorHandler('User not found', 404));
+    getUserProfile = catchAsyncErrors(async (req, res, next) => {
+        if (!req.user) return next(new ErrorHandler('User not found', 404));
 
         const user = await User.findById(req.user.id);
         res.status(200).json({
@@ -23,19 +23,19 @@ class UserController {
     })
 
     //Update current user Password => /api/v1/password/update
-    updatePassword = catchAsyncErrors( async (req, res, next) => {
-        if(!req.user) return next(new ErrorHandler('User not found', 404));
+    updatePassword = catchAsyncErrors(async (req, res, next) => {
+        if (!req.user) return next(new ErrorHandler('User not found', 404));
 
         //Get current user
         const user = await User.findById(req.user.id).select('+password');
 
         //Check previous password
         const isMatched = await user.comparePassword(req.body.currentPassword);
-        if(!isMatched) return next(new ErrorHandler('Old password is incorrect.', 401));
+        if (!isMatched) return next(new ErrorHandler('Old password is incorrect.', 401));
 
         //Check if new password is same as old
         const isSameAsOld = await user.comparePassword(req.body.newPassword);
-        if(isSameAsOld) return next(new ErrorHandler('New password should be different from old password.', 400));
+        if (isSameAsOld) return next(new ErrorHandler('New password should be different from old password.', 400));
 
         user.password = req.body.newPassword;
         await user.save();
@@ -43,9 +43,9 @@ class UserController {
     })
 
     //Update current user data => /api/v1/me/update
-    updateUser = catchAsyncErrors( async (req, res, next) => {
-        if(!req.user) return next(new ErrorHandler('User not found', 404));
-        
+    updateUser = catchAsyncErrors(async (req, res, next) => {
+        if (!req.user) return next(new ErrorHandler('User not found', 404));
+
         const newUserData = {
             name: req.body.name,
             email: req.body.email
@@ -64,11 +64,11 @@ class UserController {
     })
 
     //Delete current user => /api/v1/me/delete
-    deleteUser = catchAsyncErrors( async (req, res, next) => {
-        if(!req.user) return next(new ErrorHandler('User not found', 404));
+    deleteUser = catchAsyncErrors(async (req, res, next) => {
+        if (!req.user) return next(new ErrorHandler('User not found', 404));
 
         await User.findByIdAndDelete(req.user.id);
-        
+
         res.cookie('token', 'none', {
             expires: new Date(Date.now()),
             httpOnly: true

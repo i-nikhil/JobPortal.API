@@ -33,7 +33,7 @@ const jobSchema = new mongoose.Schema({
         minlength: [2, 'Country code must be of 2 characters.'],
         trim: true,
         validate: {
-            validator: function(value) {
+            validator: function (value) {
                 // Check if the city name is valid using the cities package
                 return countriesList.countries[value.toUpperCase()] !== undefined;
             },
@@ -127,9 +127,9 @@ const jobSchema = new mongoose.Schema({
 
 //Creating Job Slug before saving
 //pre - middleware to be called before the object creation
-jobSchema.pre('save',function(next){
+jobSchema.pre('save', function (next) {
     //Creating slug before saving to DB
-    this.slug = slugify(this.title, {lower: true});
+    this.slug = slugify(this.title, { lower: true });
     next();
 })
 

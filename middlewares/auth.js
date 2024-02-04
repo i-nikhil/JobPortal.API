@@ -4,14 +4,14 @@ const catchAsyncErrors = require('./catchAsyncErrors');
 const ErrorHandler = require('../utils/errorHandler');
 
 // Check if the user is authenticated or not
-exports.isAuthenticatedUser = catchAsyncErrors( async (req, res, next) => {
+exports.isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
     let token;
 
-    if(req.headers.authorization?.startsWith('Bearer')) {
+    if (req.headers.authorization?.startsWith('Bearer')) {
         token = req.headers.authorization.split(' ')[1];
     }
 
-    if(!token) {
+    if (!token) {
         return next(new ErrorHandler('Login to access this resource.', 401));
     }
 
@@ -24,7 +24,7 @@ exports.isAuthenticatedUser = catchAsyncErrors( async (req, res, next) => {
 // handling users roles
 exports.authorizeRoles = (...roles) => {
     return (req, res, next) => {
-        if(!roles.includes(req.user.role)) {
+        if (!roles.includes(req.user.role)) {
             return next(new ErrorHandler(`Role(${req.user.role}) is not allowed to access this resource.`, 403))
         }
         next();
