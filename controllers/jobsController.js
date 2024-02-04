@@ -13,7 +13,12 @@ class JobsController {
     }
     //Create a new job => /api/v1/job/new
     newJob = catchAsyncErrors(async (req, res, next) => {
+
+        //Adding user's id to body
+        req.body.user = req.user.id;
+
         req.body.countryCode = req.body.countryCode.toUpperCase();
+        
         const job = await Job.create(req.body);
         res.status(201).json({
             success: true,

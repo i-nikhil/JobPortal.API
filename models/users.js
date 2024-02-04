@@ -30,9 +30,7 @@ const userSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
-    },
-    resetPasswordToken: String,
-    resetPasswordExpire: Date
+    }
 })
 
 //Encrypt password before saving

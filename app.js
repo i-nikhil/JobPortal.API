@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const connectDatabase = require('./config/database');
 const jobs = require('./routes/jobs');
 const auth = require('./routes/auth');
+const user = require('./routes/user')
 const middleware = require('./middlewares/errors');
 const ErrorHandler = require('./utils/errorHandler');
 const cookieParser = require('cookie-parser');
@@ -30,6 +31,7 @@ app.unsubscribe(cookieParser());
 //Setup all routes
 app.use('/api/v1', jobs);
 app.use('/api/v1', auth);
+app.use('/api/v1', user);
 
 // Handle unhandled routes
 app.all('*', (req, res, next) => {

@@ -7,6 +7,7 @@ class AuthController {
     constructor() {
         this.registerUser = this.registerUser.bind(this);
         this.loginUser = this.loginUser.bind(this);
+        this.logout = this.logout.bind(this);
     }
 
     // Register a new user => /api/v1/register
@@ -19,7 +20,7 @@ class AuthController {
             role
         });
 
-        sendToken(user, 200, res)
+        sendToken(user, 201, res)
     })
 
     //Login user => /api/v1/login
@@ -39,6 +40,19 @@ class AuthController {
         if(!isPasswordMatched) return next(new ErrorHandler('Invalid Email or Password.', 401))
 
         sendToken(user, 200, res)
+    })
+
+    //Logout user => /api/v1/logout
+    logout = catchAsyncErrors(async (req, res, next) => {
+        res.cookie('token', 'none', {
+            expires: new Date(Date.now()),
+            httpOnly: true
+        });
+
+        res.status(200).json({
+            success: true,
+            message: 'Logged out successfully'
+        });
     })
 }
 
