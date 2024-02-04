@@ -6,6 +6,7 @@ const { isAuthenticatedUser, authorizeRoles } = require('../middlewares/auth');
 router.route('/jobs').get(jobsController.getJobs);
 router.route('/job/search').get(jobsController.searchJobs);
 router.route('/job/new').post(isAuthenticatedUser, authorizeRoles('employer', 'admin'), jobsController.newJob);
+router.route('/job/:id/apply').put(isAuthenticatedUser, authorizeRoles('user'), jobsController.applyJob)
 router.route('/job/:id')
 .get(jobsController.getJobById)
 .put(isAuthenticatedUser, authorizeRoles('employer', 'admin'), jobsController.updateJob)

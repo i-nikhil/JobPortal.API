@@ -1,6 +1,7 @@
 const Job = require('../models/jobs');
 const ErrorHandler = require('../utils/errorHandler');
 const catchAsyncErrors = require('../middlewares/catchAsyncErrors');
+const path = require('path');
 
 class JobsController {
     constructor() {
@@ -10,6 +11,7 @@ class JobsController {
         this.searchJobs = this.searchJobs.bind(this)
         this.updateJob = this.updateJob.bind(this)
         this.deleteJob = this.deleteJob.bind(this)
+        this.applyJob = this.applyJob.bind(this)
     }
     //Create a new job => /api/v1/job/new
     newJob = catchAsyncErrors(async (req, res, next) => {
@@ -156,6 +158,65 @@ class JobsController {
         return res.status(201).json({
             success: true,
             message: 'Job deleted successfully.'
+        });
+    });
+
+    //Apply to job using resume => /api/v1/job/:id/apply
+    applyJob = catchAsyncErrors( async (req, res, next) => {
+        let job = await Job.findById(req.params.id).select('+applicantsApplied');
+
+        if(!job) return next(new ErrorHandler('Job not found.', 404));
+
+        //Check if last date of applying to job has passed
+        if(job.lastDate < new Date(Date.now()))
+        return next(new ErrorHandler('You cannot apply to this job. Date is over.', 400));
+
+        //Check if the user has already applied to this job
+        for(const applicants of job.applicantsApplied) {
+            if(applicants.id == req.user.id)
+            return next(new ErrorHandler('You have already applied for this job.', 400));
+        }
+
+        //Check uploaded files
+        if(!req.files) return next(new ErrorHandler('Please upload file.', 400));
+
+        const file = req.files.file;
+
+        //Check file type
+        const supportedFiles = /.docx|.pdf/; //regex
+        if(!supportedFiles.test(path.extname(file.name)))
+        return next(new ErrorHandler('Please upload document file.', 400));
+
+        //Check file size
+        if(file.size > process.env.MAX_FILE_SIZE)
+        return next(new ErrorHandler('Please upload file less than 2MB.', 400));
+
+        //Rename the uploaded resume
+        file.name =  `${req.user.name.replace(' ', '_')}_${job._id}${path.parse(file.name).ext}`;
+
+        //Store the file in upload path
+        file.mv(`${process.env.UPLOAD_PATH}/${file.name}`, async err => {
+            if(err) {
+                console.log(err);
+                return next(new ErrorHandler('Resume upload failed.', 500));
+            }
+
+            await Job.findByIdAndUpdate(req.params.id, {$push: {
+                applicantsApplied: {
+                    id: req.user.id,
+                    resume: file.name
+                }
+            }}, {
+                new: true,
+                runValidators: true,
+                useFindAndModify: false
+            });
+
+            res.status(200).json({
+                success: true,
+                message: 'Applied to Job successfully.',
+                data: file.name
+            })
         });
     });
 }

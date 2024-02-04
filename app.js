@@ -8,6 +8,7 @@ const user = require('./routes/user')
 const middleware = require('./middlewares/errors');
 const ErrorHandler = require('./utils/errorHandler');
 const cookieParser = require('cookie-parser');
+const fileUpload = require('express-fileupload');
 
 //Setting up config.env file variables
 dotenv.config({path: './config/config.env'}); 
@@ -27,6 +28,9 @@ app.use(express.json());
 
 //Set coookie parser
 app.unsubscribe(cookieParser());
+
+//Handle file upload
+app.use(fileUpload());
 
 //Setup all routes
 app.use('/api/v1', jobs);
