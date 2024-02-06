@@ -31,7 +31,11 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     }
-})
+},
+    {
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true }
+    });
 
 //Encrypt password before saving
 userSchema.pre('save', async function (next) {
@@ -47,5 +51,12 @@ userSchema.methods.getJwtToken = function () {
 userSchema.methods.comparePassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password)
 }
+//Show all jobs created by user using virtuals
+userSchema.virtual('jobsPublished', {
+    ref: 'Job',
+    localField: '_id',
+    foreignField: 'user',
+    justOne: false
+})
 
 module.exports = mongoose.model('User', userSchema)
