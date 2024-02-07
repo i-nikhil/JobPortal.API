@@ -2,6 +2,7 @@ const Job = require('../models/jobs');
 const ErrorHandler = require('../utils/errorHandler');
 const catchAsyncErrors = require('../middlewares/catchAsyncErrors');
 const path = require('path');
+const fs = require('fs')
 
 class JobsController {
     constructor() {
@@ -133,6 +134,11 @@ class JobsController {
             return next(new ErrorHandler('Job not found.', 404));
         }
 
+        //Check if the user is the publisher of this job
+        if (job.user.toString() !== req.user.id && req.user.role !== 'admin') {
+            return next(new ErrorHandler(`User ${req.user.id} is not allowed to update this job.`))
+        }
+
         job = await Job.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true
@@ -147,10 +153,24 @@ class JobsController {
 
     //Delete a Job by Id => /api/v1/job/:id
     deleteJob = catchAsyncErrors(async (req, res, next) => {
-        let job = await Job.findById(req.params.id);
+        let job = await Job.findById(req.params.id).select('+applicantsApplied');
 
-        if (!job || job.length === 0) {
+        if (!job) {
             return next(new ErrorHandler('Job not found.', 404));
+        }
+
+        //Check if the user is the publisher of this job
+        if (job.user.toString() !== req.user.id && req.user.role !== 'admin') {
+            return next(new ErrorHandler(`User ${req.user.id} is not allowed to delete this job.`))
+        }
+
+        //Delete files associated with this job
+        for (let applicants of job.applicantsApplied) {
+            let filepath = `${__dirname}/public/uploads/${applicants.resume}`.replace('\\controllers', '');
+
+            fs.unlink(filepath, err => {
+                if (err) return console.log(err);
+            });
         }
 
         await Job.findByIdAndDelete(req.params.id);

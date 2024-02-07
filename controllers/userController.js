@@ -11,6 +11,9 @@ class UserController {
         this.updatePassword = this.updatePassword.bind(this)
         this.updateUser = this.updateUser.bind(this)
         this.deleteUser = this.deleteUser.bind(this)
+        this.getAppliedJobs = this.getAppliedJobs.bind(this)
+        this.getUsers = this.getUsers.bind(this)
+        this.deleteUserById = this.deleteUserById.bind(this)
         this.#deleteUserData = this.#deleteUserData.bind(this)
     }
 
@@ -85,6 +88,55 @@ class UserController {
         res.status(200).json({
             success: true,
             message: 'Your account has been deleted.'
+        })
+    })
+
+    //Show all applied jobs => /api/v1/jobs/applied
+    getAppliedJobs = catchAsyncErrors(async (req, res, next) => {
+        const jobs = await Job.find({ 'applicantsApplied.id': req.user.id }).select('+applicantsApplied');
+
+        res.status(200).json({
+            success: true,
+            results: jobs.length,
+            data: jobs
+        })
+    })
+
+    //Show all jobs published by employer => /api/v1/jobs/published
+    getPublishedJobs = catchAsyncErrors(async (req, res, next) => {
+        const jobs = await Job.find({ user: req.user.id });
+
+        res.status(200).json({
+            success: true,
+            results: jobs.length,
+            data: jobs
+        })
+    })
+
+    //Show all users to admin => /api/v1/users
+    getUsers = catchAsyncErrors(async (req, res, next) => {
+        const users = await User.find()
+
+        res.status(200).json({
+            success: true,
+            length: users.length,
+            data: users
+        })
+    })
+
+    //Delete any user by admin => /api/v1/user/:id
+    deleteUserById = catchAsyncErrors(async (req, res, next) => {
+        const user = await User.findById(req.params.id);
+
+        if (!user) return next(new ErrorHandler(`User not found with id: ${req.params.id}`, 404));
+
+        await this.#deleteUserData(user.id, user.role);
+
+        await User.findByIdAndDelete(user.id);
+
+        res.status(200).json({
+            success: true,
+            message: 'User is deleted by Admin.'
         })
     })
 
