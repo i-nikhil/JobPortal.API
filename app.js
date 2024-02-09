@@ -13,6 +13,8 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xssClean = require('xss-clean');
+const hpp = require('hpp');
+const cors = require('cors');
 
 //Setting up config.env file variables
 dotenv.config({ path: './config/config.env' });
@@ -44,6 +46,12 @@ app.use(mongoSanitize());
 
 //Prevent XSS attacks using scripts in input
 app.use(xssClean());
+
+//Prevent parameter pollution
+app.use(hpp());
+
+//Setup CORS - Accessible by other domains
+app.use(cors());
 
 //Rate Limiting
 const limiter = rateLimit({
