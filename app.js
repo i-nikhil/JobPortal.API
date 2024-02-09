@@ -9,6 +9,10 @@ const middleware = require('./middlewares/errors');
 const ErrorHandler = require('./utils/errorHandler');
 const cookieParser = require('cookie-parser');
 const fileUpload = require('express-fileupload');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xssClean = require('xss-clean');
 
 //Setting up config.env file variables
 dotenv.config({ path: './config/config.env' });
@@ -23,6 +27,9 @@ process.on('uncaughtException', err => {
 //Connecting to database
 connectDatabase();
 
+//Setup security headers
+app.use(helmet());
+
 //Setup body parser
 app.use(express.json());
 
@@ -31,6 +38,20 @@ app.unsubscribe(cookieParser());
 
 //Handle file upload
 app.use(fileUpload());
+
+//Sanitize user supplied data to prevent mongoDB operator injection
+app.use(mongoSanitize());
+
+//Prevent XSS attacks using scripts in input
+app.use(xssClean());
+
+//Rate Limiting
+const limiter = rateLimit({
+    windowMs: 10 * 60 * 1000, //10 minutes
+    max: 100 //100 request per 10 minutes
+});
+
+app.use(limiter);
 
 //Setup all routes
 app.use('/api/v1', jobs);
