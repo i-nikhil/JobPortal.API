@@ -1,9 +1,8 @@
 # JobPortal.API
 
-JobPortal.API is a Node.js-based project leveraging the Express.js framework, is designed to provide a seamless and efficient API for online job portals. It facilitates the posting, updating, and deletion of job vacancies by employer, while offering job seekers search functionalities, resume-based applications, and real-time tracking of applications.
+JobPortal.API is a Node.js-based RESTful API project leveraging the Express.js framework and NoSQL flexibility with MongoDB. It is designed to provide a seamless and efficient API for online job portals, facilitating the posting, updating, and deletion of job vacancies by employers, while offering job seekers search functionalities, resume-based applications, and real-time tracking of applications.
 
-Please find the detailed API documentation and try out links here:
-https://documenter.getpostman.com/view/2s9YyzdyBV
+Please find the detailed API documentation here: https://documenter.getpostman.com/view/2s9YyzdyBV
 
 Let's dive into the features and functionalities:
 
